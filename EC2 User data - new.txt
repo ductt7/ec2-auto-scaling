@@ -1,0 +1,14 @@
+#!/bin/bash -xe
+yum -y update
+yum -y install httpd
+amazon-linux-extras install php7.2
+yum -y install php-mbstring
+yum -y install telnet
+case $(ps -p 1 -o comm | tail -1) in
+systemd) systemctl enable --now httpd ;;
+init) chkconfig httpd on; service httpd start ;;
+*) echo "Error starting httpd (OS not using init or systemd)." 2>&1
+esac
+cd /var/www/html
+wget https://ductt-test-s3.s3.ap-southeast-1.amazonaws.com/ec2-autoscale-web.tar
+tar xvf ec2-autoscale-web.tar
